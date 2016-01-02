@@ -1,0 +1,13 @@
+{
+  "name": "base-html-tpl",
+  "version": "0.1.0",
+  "authors": [],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components"
+  ],
+  "dependencies": {
+  }
+}
