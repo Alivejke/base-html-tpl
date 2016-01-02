@@ -73,7 +73,7 @@ module.exports = function(grunt) {
         },
 
         clean: {
-            build: {
+            dev: {
                 src: ['tmp']
             }
         },
