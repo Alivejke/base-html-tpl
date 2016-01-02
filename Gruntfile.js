@@ -5,6 +5,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-clean');
 
     grunt.initConfig({
         connect: {
@@ -71,6 +72,12 @@ module.exports = function(grunt) {
             }
         },
 
+        clean: {
+            build: {
+                src: ['tmp']
+            }
+        },
+
         watch: {
             options: {
                 livereload: true
@@ -93,7 +100,7 @@ module.exports = function(grunt) {
             },
 
             less: {
-                files: ['src/**/*.scss'],
+                files: ['src/**/*.less'],
                 tasks: ['less', 'concat:css'],
                 options: {
                     interrupt: true
@@ -129,7 +136,8 @@ module.exports = function(grunt) {
     grunt.registerTask('build', [
         'less',
         'concat',
-        'copy'
+        'copy',
+        'clean'
     ]);
     grunt.registerTask('dev', [
         'connect',
