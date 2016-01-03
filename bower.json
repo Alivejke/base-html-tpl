@@ -9,5 +9,7 @@
     "bower_components"
   ],
   "dependencies": {
+    "jquery": "^1",
+    "reset-css": "~2.0.2011012602"
   }
 }

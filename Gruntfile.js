@@ -6,6 +6,9 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
+    grunt.loadNpmTasks('grunt-contrib-uglify');
+    grunt.loadNpmTasks('grunt-contrib-cssmin');
 
     grunt.initConfig({
         connect: {
@@ -25,18 +28,14 @@ module.exports = function(grunt) {
             },
             jsVendor: {
                 src: [
-                    // 'bower_components/somelib/lib.js',
+                    'bower_components/jquery/dist/jquery.min.js',
                     'src/js/vendor/**/*'
                 ],
                 dest: 'build/js/vendor.js'
             },
-            js: {
-                src: ['src/js/**/*.js', '!src/js/vendor/**/*'],
-                dest: 'build/js/main.js'
-            },
             css: {
                 src: [
-                    // 'bower_components/somelib/lib.css',
+                    'bower_components/reset-css/reset.css',
                     'tmp/css/main.css'
                 ],
                 dest: 'build/css/main.css'
@@ -49,6 +48,87 @@ module.exports = function(grunt) {
                     'tmp/css/main.css': 'src/less/main.less'
                 }
             },
+        },
+
+        cssmin: {
+            options: {
+                keepSpecialComments: 0
+            },
+            rel: {
+                files: {
+                    'build/css/main.css': [
+                        'bower_components/reset-css/reset.css',
+                        'tmp/css/main.css'
+                    ]
+                }
+            }
+        },
+
+        jshint: {
+            options: {
+                'globals': {
+                    '$': false,
+                    'jQuery': false,
+                    '_': false
+                },
+                'bitwise': true,
+                'curly': true,
+                'eqeqeq': false,
+                'forin': true,
+                'freeze': true,
+                'funcscope': true,
+                'futurehostile': false,
+                'iterator': true,
+                'latedef': true,
+                'noarg': true,
+                'nocomma': true,
+                'nonew': true,
+                'notypeof': true,
+                'shadow': false,
+                'singleGroups': false,
+                'strict': false,
+                'undef': true,
+                'asi': true,
+                'eqnull': false,
+                'evil': true,
+                'expr': false,
+                'lastsemic': true,
+                'noyield': false,
+                'proto': true,
+                'withstmt': true
+            },
+            dev: {
+                options: {
+                    'debug': true,
+                    'devel': true,
+                    'unused': false
+                },
+                src: ['src/js/**/*.js', '!src/js/vendor/**/*'],
+            },
+            rel: {
+                options: {
+                    'debug': false,
+                    'devel': false,
+                    'unused': true
+                },
+                src: ['build/js/main.js']
+            }
+        },
+
+        uglify: {
+            dev: {
+                options: {
+                    beautify: true
+                },
+                files: {
+                    'build/js/main.js': ['src/js/**/*.js', '!src/js/vendor/**/*']
+                }
+            },
+            rel: {
+                files: {
+                    'build/js/main.js': ['src/js/**/*.js', '!src/js/vendor/**/*']
+                }
+            }
         },
 
         copy: {
@@ -73,8 +153,8 @@ module.exports = function(grunt) {
         },
 
         clean: {
-            dev: {
-                src: ['tmp']
+            all: {
+                src: ['tmp', 'build']
             }
         },
 
@@ -85,7 +165,7 @@ module.exports = function(grunt) {
 
             js: {
                 files: ['src/js/**/*.js'],
-                tasks: ['concat:js'],
+                tasks: ['jshint:dev', 'uglify:dev'],
                 options: {
                     interrupt: true
                 }
@@ -133,18 +213,31 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('build', [
+    grunt.registerTask('build:dev', [
+        'clean',
         'less',
         'concat',
-        'copy',
-        'clean'
+        'jshint:dev',
+        'uglify:dev',
+        'copy'
     ]);
-    grunt.registerTask('dev', [
+
+    grunt.registerTask('build:rel', [
+        'clean',
+        'less',
+        'concat:jsVendor',
+        'jshint:rel',
+        'uglify:rel',
+        'copy'
+    ]);
+
+    grunt.registerTask('serve', [
         'connect',
         'watch'
     ]);
+
     grunt.registerTask('default', [
-        'build',
-        'dev'
+        'build:dev',
+        'serve'
     ]);
 };
